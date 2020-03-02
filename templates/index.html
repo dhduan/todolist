@@ -7,7 +7,9 @@
     <thead>
         <th class="active">No</th>
         <th class="active">标题</th>
+        <th class="active">内容</th>
         <th class="active">是否完成</th>
+        <th class="active">创建人</th>
         <th class="active">创建时间</th>
         <th class='active'>操作</th> 
     </thead>
@@ -19,7 +21,9 @@
             {% else %} <tr class="info"> {% endif %}
                 <td>{{ loop.index }}</td>
                 <td>{{ todo.title }}</td>
+                <td>{{ todo.content }}</td>
                 <td>{{ todo.status }}</td>
+                <td>{{ todo.create_user }}</td>
                 <td>{{ todo.create_time }}</td>
                 <td>
                     {% if todo.status %}
