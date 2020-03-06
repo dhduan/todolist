@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
+{%import 'pages.html' as pg%}
+
 {% block page_content %}
 
 <table class="table table-hover">
@@ -11,49 +13,44 @@
         <th class="active">是否完成</th>
         <th class="active">创建人</th>
         <th class="active">创建时间</th>
-        <th class='active'>操作</th> 
+        <th class='active'>操作</th>
     </thead>
     <tbody>
         {% for todo in todolists %}
-
             <!-- tr -->
             {% if todo.status %} <tr class="success">
             {% else %} <tr class="info"> {% endif %}
-                <td>{{ loop.index }}</td>
+                <td>{{ todo.id }}</td>
                 <td>{{ todo.title }}</td>
                 <td>{{ todo.content }}</td>
                 <td>{{ todo.status }}</td>
                 <td>{{ todo.create_user }}</td>
                 <td>{{ todo.create_time }}</td>
                 <td>
-                    {% if todo.status %}
-                    <a href="{{ url_for('delete_todo_list', id=todo.id) }}" class="btn btn-danger" role ="button">删除</a>
-                    {% else %}
-                    <a href="{{ url_for('change_todo_list', id=todo.id) }}" class="btn btn-success" role ="button">修改</a>
-                    {% endif %}
+                    <a href="{{ url_for('delete_todo_list', id=todo.id) }}" class="btn btn-danger" role ="button" onclick="{if(confirm('确定删除吗?')){this.document.formname.submit();return true;}return false;}">删除</a>
+                    <a href="{{ url_for('change_todo_list', id=todo.id) }}" class="btn btn-success" role ="button">编辑</a>
                 </td>
 
             </tr>
         {% endfor %}
-
     </tbody>
 </table>
+{{pg.my_paginate(pagination,'show_page')}}
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal"> ADD </button>
-
+<button type="button" class="btn btn-primary btn-lg"  data-toggle="modal" data-target="#myModal" > 添加 </button>
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog"> <div class="modal-content">
 
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel" align="center">add new todo list</h4>
+        <h4 class="modal-title" id="myModalLabel" align="center">添加一条新记录</h4>
       </div>
 
       <div class="modal-body">
           <div class="row">
-              <div class="col-md-8 col-md-offset-2"> {{ wtf.quick_form(form, form_type="horizontal") }} </div>
+              <div class="col-md-8 col-md-offset-2"> {{ wtf.quick_form(form, action='/add',form_type="horizontal") }} </div>
           </div>
       </div> <!-- modal body -->
 
