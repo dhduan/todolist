@@ -7,12 +7,14 @@
 
 <table class="table table-hover">
     <thead>
-        <th class="active">No</th>
-        <th class="active">标题</th>
+        <th class="active">编号</th>
+        <th class="active">日期</th>
+        <th class="active">工地</th>
         <th class="active">内容</th>
-        <th class="active">是否完成</th>
-        <th class="active">创建人</th>
-        <th class="active">创建时间</th>
+        <th class="active">工时</th>
+        <th class="active">记工人</th>
+        <th class="active">记工时间</th>
+        <th class="active">修改时间</th>
         <th class='active'>操作</th>
     </thead>
     <tbody>
@@ -20,12 +22,14 @@
             <!-- tr -->
             {% if todo.status %} <tr class="success">
             {% else %} <tr class="info"> {% endif %}
-                <td>{{ todo.id }}</td>
+                <td>{{ loop.index }}</td>
+                <td>{{ todo.wrk_date }}</td>
                 <td>{{ todo.title }}</td>
                 <td>{{ todo.content }}</td>
                 <td>{{ todo.status }}</td>
                 <td>{{ todo.create_user }}</td>
                 <td>{{ todo.create_time }}</td>
+                <td>{{ todo.upd_time }}</td>
                 <td>
                     <a href="{{ url_for('delete_todo_list', id=todo.id) }}" class="btn btn-danger" role ="button" onclick="{if(confirm('确定删除吗?')){this.document.formname.submit();return true;}return false;}">删除</a>
                     <a href="{{ url_for('change_todo_list', id=todo.id) }}" class="btn btn-success" role ="button">编辑</a>
@@ -38,7 +42,7 @@
 {{pg.my_paginate(pagination,'show_page')}}
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary btn-lg"  data-toggle="modal" data-target="#myModal" > 添加 </button>
+<button type="button" style="text-align: center" class="btn btn-primary btn-lg"  data-toggle="modal" data-target="#myModal" > 添加 </button>
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog"> <div class="modal-content">
@@ -58,4 +62,16 @@
 </div>
 
 
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+    $('#wrk_date').datepicker({
+        weekStart: 1,
+        autoclose: true,
+        daysOfWeekHighlighted: "0,6",
+        format: "yyyy/mm/dd",
+        language: "zh-CN"
+    });
+    </script>
 {% endblock %}

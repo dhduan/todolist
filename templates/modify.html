@@ -9,3 +9,15 @@
 </div>
 
 {% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+    $('#wrk_date').datepicker({
+        weekStart: 1,
+        autoclose: true,
+        daysOfWeekHighlighted: "0,6",
+        format: "yyyy/mm/dd",
+        language: "zh-CN"
+    });
+    </script>
+{% endblock %}

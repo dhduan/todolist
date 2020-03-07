@@ -9,7 +9,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 from forms import TodoListForm, LoginForm
 from ext import db, login_manager
 from models import TodoList, User
-
+import time
 SECRET_KEY = 'This is my key'
 
 app = Flask(__name__)
@@ -32,8 +32,9 @@ def show_todo_list(page=None):
         page = 1
     form = TodoListForm()
     if request.method == 'GET' and current_user.id == 1:
-        todolists = TodoList.query.all()
-        return render_template('index.html', todolists=todolists,form=form)
+        # todolists = TodoList.query.all()
+        todolists = TodoList.query.filter_by(user_id=1).order_by(TodoList.create_time.desc()).paginate(page=page, per_page=5)
+        return render_template('index.html', todolists=todolists.items, pagination=todolists,form=form)
     elif current_user.id != 1:
         tdl = TodoList.query.filter_by(user_id=current_user.id).order_by(TodoList.create_time.desc()).paginate(page=page, per_page=5)
         return render_template('index.html', todolists=tdl.items,  pagination=tdl,form=form)
@@ -62,9 +63,11 @@ def show_page(page=None):
 @login_required
 def add_todo_list():
     form = TodoListForm()
-    if request.method =='POST':
+    if request.method == 'POST':
+        date = form.wrk_date.data.strftime('%Y-%m-%d')
+        print (date)
         if form.validate_on_submit():
-            todolist = TodoList(current_user.id, form.title.data, form.content.data, form.status.data,current_user.username)
+            todolist = TodoList(current_user.id, date, form.title.data, form.content.data, form.status.data, current_user.username)
             db.session.add(todolist)
             db.session.commit()
             flash(current_user.username+'添加了一条新的工作内容')
@@ -78,7 +81,7 @@ def delete_todo_list(id):
      todolist = TodoList.query.filter_by(id=id).first_or_404()
      db.session.delete(todolist)
      db.session.commit()
-     flash('You have delete a todo list')
+     flash('您删除了第'+str(id)+'条工作日记')
      return redirect(url_for('show_todo_list'))
 
 
@@ -88,17 +91,20 @@ def change_todo_list(id):
     if request.method == 'GET':
         todolist = TodoList.query.filter_by(id=id).first_or_404()
         form = TodoListForm()
+        form.wrk_date.data = todolist.wrk_date
         form.title.data = todolist.title
+        form.content.data = todolist.content
         form.status.data = str(todolist.status)
-        todolist.content = form.content.data
         return render_template('modify.html', form=form)
     else:
         form = TodoListForm()
         if form.validate_on_submit():
             todolist = TodoList.query.filter_by(id=id).first_or_404()
+            todolist.wrk_date = form.wrk_date.data.strftime('%Y-%m-%d')
             todolist.title = form.title.data
             todolist.status = form.status.data
             todolist.content = form.content.data
+            todolist.upd_time = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
             db.session.commit()
             flash(current_user.username+'修改了第'+str(id)+'条记录')
         else:
